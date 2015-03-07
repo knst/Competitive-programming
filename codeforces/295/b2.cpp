@@ -58,13 +58,12 @@ int main() {
 
     int count = 0;
     while (n != m) {
-        if (n > m) {
-            --n;
-            ++count;
+        if (m > n && m % 2 == 0) {
+            m /= 2;
         } else {
-            n *= 2;
-            ++count;
+            ++m;
         }
+        ++count;
     }
     cout << count << endl;
 
