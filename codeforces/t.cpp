@@ -23,7 +23,7 @@ namespace std {
             return hash<T1>()(p.first) & hash<T2>()(p.second);
         }
     };
-};
+}
 
 constexpr long double const_pi() { return std::atan(static_cast<long double>(1))*4; }
 
