@@ -5,6 +5,7 @@
  * **************************************************************************/
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -42,25 +43,28 @@ int gcd(int a, int b) {
 int main() {
     std::ios_base::sync_with_stdio(false);
 
+    ifstream input("bestbuy.in");
+    ofstream output("bestbuy.out");
+
     int c1;
     int c2;
-    cin >> c1 >> c2;
+    input >> c1 >> c2;
     size_t n;
     cin >> n;
     multiset<pair<int, pair<int, int>>> s;
     for (size_t i = 0; i < n; ++i) {
         int a;
         int t;
-        cin >> a >> t;
+        input >> a >> t;
         s.insert({t, {0, a}});
     }
     size_t m;
-    cin >> m;
+    input >> m;
     vector<bool> v(m+1, true);
     for (size_t i = 1; i <= m; ++i) {
         int a;
         int b;
-        cin >> a >> b;
+        input >> a >> b;
         s.insert({a, {1, i}});
         s.insert({b, {1, -i}});
     }
@@ -84,7 +88,7 @@ int main() {
         }
     }
 
-    cout << result << endl;
+    output << result << endl;
 
     return 0;
 }

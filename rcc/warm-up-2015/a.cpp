@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <limits>
 #include <map>
 #include <set>
@@ -42,20 +43,22 @@ int gcd(int a, int b) {
 int main() {
     std::ios_base::sync_with_stdio(false);
 
+    ifstream input("colors.in");
+    ofstream output("colors.out");
     size_t n;
     size_t k;
-    cin >> n >> k;
+    input >> n >> k;
     set<int> s;
     multiset<int> s2;
     for (size_t i = 0; i < n; ++i) {
         int x;
-        cin >> x;
+        input >> x;
         s.insert(x);
         s2.insert(x);
     }
     int count = 0;
     for (auto i : s) {
-        cout << i << ' ';
+        output << i << ' ';
         auto j = s2.find(i);
         s2.erase(j);
         ++count;
@@ -65,9 +68,10 @@ int main() {
     for (auto i : s2) {
         if (count == k)
             break;
-        cout << i << ' ';
+        output << i << ' ';
         ++count;
     }
+    output << endl;
 
 
 
