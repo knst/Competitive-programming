@@ -47,7 +47,7 @@ int main() {
     cin >> c1 >> c2;
     size_t n;
     cin >> n;
-    set<pair<int, pair<int, int>>> s;
+    multiset<pair<int, pair<int, int>>> s;
     for (size_t i = 0; i < n; ++i) {
         int a;
         int t;
