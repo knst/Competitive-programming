@@ -42,7 +42,7 @@ int gcd(int a, int b) {
 uint64_t MAX = 1000L * 1000 * 1000 * 1000 + 1;
 uint64_t test(vector<pair<int, int>>& v, int maxH) {
     size_t n = v.size();
-    size_t m = (n + 1) / 2;
+    size_t m = n / 2;
     vector<uint64_t> dyn(m + 1);
     for (auto i : v) {
         if (i.first > maxH && i.second > maxH)
@@ -80,6 +80,7 @@ int main() {
         int h;
         cin >> w >> h;
         hs.insert(h);
+        hs.insert(w);
         v.push_back({w, h});
     }
     uint64_t minimal = MAX;
