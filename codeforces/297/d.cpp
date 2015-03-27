@@ -50,7 +50,7 @@ int main() {
         cin >> i;
 
     vector<vector<bool>> mask(n + 2, vector<bool>(m + 2, true));
-
+    vector<vector<bool>> maskQueue(n + 2, vector<bool>(m + 2, false));
 
     queue<pair<size_t, size_t>> q;
 
@@ -59,38 +59,46 @@ int main() {
             if (v[i][j] == '.') {
                 q.push({i + 1, j + 1});
                 mask[i + 1][j + 1] = false;
+                maskQueue[i + 1][j + 1] = true;
             }
+
+    vector<pair<size_t, size_t>> shifts{{0, 0}, {0, 1}, {1, 0}, {1, 1}};
     while (!q.empty()) {
         auto it = q.front();
+        maskQueue[it.first][it.second] = false;
         q.pop();
-        if (!it.first  || !it.second || it.first > n || it.second > m)
-            continue;
         bool ok = true;
-        for (size_t i = 0; i < 2; ++i)
-            for (size_t j = 0; j < 2; ++j) {
-                int count = 0;
-                for (size_t x = 0; x < 2; ++x) {
-                    for (size_t y = 0; y < 2; ++y) {
-                        if (mask[it.first - i + x][it.second - j + y])
-                            ++count;
-                    }
-                }
-                if (count == 1)
-                    ok =false;
+        for (auto base :  shifts) {
+            int count = 0;
+            for (auto shift : shifts) {
+                if (mask[it.first - base.first + shift.first][it.second - base.second + shift.second])
+                    ++count;
             }
+            if (count == 1)
+                ok =false;
+        }
         if (!ok) {
             mask[it.first][it.second] = false;
             for (int i = -1; i <= 1; ++i) {
                 for (int j = -1; j <= 1; ++j) {
-                    if (mask[it.first + i][it.second + j])
-                        q.push({it.first + i, it.second + j});
+                    pair<size_t, size_t> t = {it.first + i, it.second + j};
+                    if (t.first == 0 || t.second == 0 || t.first > n || t.second > m)
+                        continue;
+                    if (mask[t.first][t.second])
+                        if (!maskQueue[t.first][t.second]) {
+                            maskQueue[t.first][t.second] = true;
+                            q.push(t);
+                        }
                 }
             }
         }
     }
     for (size_t i = 1; i <= n; ++i) {
         for (size_t j = 1; j <= m; ++j) {
-            cout << ".*"[mask[i][j]];
+            if (mask[i][j])
+                cout << "*";
+            else
+                cout << ".";
         }
         cout << '\n';
     }
