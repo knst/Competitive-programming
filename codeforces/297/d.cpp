@@ -49,47 +49,47 @@ int main() {
     for (auto& i : v)
         cin >> i;
 
-    vector<vector<bool>> mask(n + 2, vector<bool>(m + 2, true));
-    vector<vector<bool>> maskQueue(n + 2, vector<bool>(m + 2, false));
+    vector<vector<int>> mask(n + 2, vector<int>(m + 2, true));
+    vector<vector<int>> queueMask(n + 2, vector<int>(m + 2, false));
 
     queue<pair<size_t, size_t>> q;
 
     for (size_t i = 0; i < n; ++i)
         for (size_t j = 0; j < m; ++j)
             if (v[i][j] == '.') {
-                q.push({i + 1, j + 1});
                 mask[i + 1][j + 1] = false;
-                maskQueue[i + 1][j + 1] = true;
+            } else {
+                q.push({i + 1, j + 1});
+                queueMask[i + 1][j + 1] = true;
             }
 
     vector<pair<size_t, size_t>> shifts{{0, 0}, {0, 1}, {1, 0}, {1, 1}};
     while (!q.empty()) {
         auto it = q.front();
-        maskQueue[it.first][it.second] = false;
         q.pop();
-        bool ok = true;
+        queueMask[it.first][it.second] = false;
         for (auto base :  shifts) {
             int count = 0;
+            pair<size_t, size_t> last;
             for (auto shift : shifts) {
-                if (mask[it.first - base.first + shift.first][it.second - base.second + shift.second])
+                pair<size_t, size_t> current = { it.first - base.first + shift.first, it.second - base.second + shift.second };
+                if (mask[current.first][current.second]) {
                     ++count;
-            }
-            if (count == 1)
-                ok =false;
-        }
-        if (!ok) {
-            mask[it.first][it.second] = false;
-            for (int i = -1; i <= 1; ++i) {
-                for (int j = -1; j <= 1; ++j) {
-                    pair<size_t, size_t> t = {it.first + i, it.second + j};
-                    if (t.first == 0 || t.second == 0 || t.first > n || t.second > m)
-                        continue;
-                    if (mask[t.first][t.second])
-                        if (!maskQueue[t.first][t.second]) {
-                            maskQueue[t.first][t.second] = true;
-                            q.push(t);
-                        }
+                    last = current;
                 }
+            }
+            if (count == 1) {
+                mask[it.first][it.second] = false;
+                for (size_t i = 0; i < 8; ++i) {
+                    pair<size_t, size_t> pretend = {it.first + dx8[i], it.second + dy8[i]};
+                    if (!pretend.first || !pretend.second || pretend.first > n || pretend.second > m)
+                        continue;
+                    if (!mask[pretend.first][pretend.second])
+                        continue;
+                    if (!queueMask[pretend.first][pretend.second])
+                        q.push(pretend);
+                }
+                break;
             }
         }
     }
