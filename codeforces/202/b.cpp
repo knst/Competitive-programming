@@ -19,20 +19,21 @@ int main()
             minimalI = i;
         }
     }
-    int count = 0;
-    while (v >= minimal * 2) {
-        v -= minimal;
-        count ++;
+    int n = v / minimal;
+    v -= n * minimal;
+    if (n == 0) {
+        cout << -1 << endl;
+        return 0;
     }
-    int maximal = -1;
-    for (int i = 0; i < 9; ++i)
-        if (a[i] <= v)
-            maximal = i + 1;
-    cout << maximal;
-    for (int i = 0; i < count; ++i)
-        cout << minimalI + 1;
+    for (int i = 0; i < n; ++i) {
+        int maximal = 0;
+        for (int j = 0; j < 9; ++j) {
+            if (a[j] <= v + minimal)
+                maximal = j + 1;
+        }
+        cout << maximal;
+        v +=  minimal - a[maximal - 1];
+    }
     cout << endl;
-
-
     return 0;
 }

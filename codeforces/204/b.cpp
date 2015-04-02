@@ -17,37 +17,27 @@ int main() {
         int value;
         cin >> value;
         v.push_back(value);
-    }
 
-    for (int i = 0; i < n; ++i) {
         if (first[v[i]] == 0) {
             first[v[i]] = i + 1;
-            delta[v[i]] = n + 1;
-        } else if (last[v[i]] == 0) {
-            last[v[i]] = i + 1;
-        } else if (i - last[v[i]] + 1 < delta[v[i]]) {
-            delta[v[i]] = i - last[v[i]] + 1;
+            delta[v[i]] = 0;
+        } else {
+            int newDelta = i - last[v[i]] + 1;
+            if (delta[v[i]] == 0)
+                delta[v[i]] = newDelta;
+            if (newDelta != delta[v[i]])
+                delta[v[i]] = -1;
         }
+        last[v[i]] = i + 1;
     }
     vector<pair<int,int> > result;
     for (map<int, int>::const_iterator i = first.begin(); i != first.end(); ++i) {
         int value = i->first;
         int d = delta[value];
-        if (d == n + 1) {
+        if (d == 0) {
             result.push_back(make_pair(value, 0));
-        } else {
-            bool ok = true;
-            bool ended = false;
-            int first = i->second;
-            while (first + d <= n) {
-                first += d;
-                if (v[first-1] != value)
-                    ended = true;
-                if (ended && v[first-1] == value)
-                    ok = false;
-            }
-            if (ok)
-                result.push_back(make_pair(value, d));
+        } else if (d != -1) {
+            result.push_back(make_pair(value, d));
         }
     }
     sort(result.begin(), result.end());
