@@ -45,18 +45,14 @@ int main() {
 
     size_t M = 5000 * 1000;
     vector<bool> prime(M + 1, true);
-    vector<int> sum(M + 1);
+    vector<int> sum(M + 1, 1);
     prime[0] = false;
     prime[1] = false;
     for (uint64_t i = 2; i <= M; ++i) {
         if (prime[i])
-            for (uint64_t j = i; j <= M; j += i) {
+            for (uint64_t j = i * i; j <= M; j += i) {
                 prime[j] = false;
-                int value = j;
-                while (value % i == 0) {
-                    sum[j]++;
-                    value /= i;
-                }
+                sum[j] = sum[j / i] + 1;
             }
     }
     for (size_t i = 2; i < sum.size(); ++i) {
