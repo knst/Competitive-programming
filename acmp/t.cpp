@@ -5,9 +5,11 @@
  * **************************************************************************/
 
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <string>
 #include <map>
 #include <set>
 #include <stack>
@@ -39,6 +41,8 @@ int main() {
     ofstream output("OUTPUT.TXT");
 #endif
 
+    size_t n;
+    input >> n;
 
 
     return 0;
