@@ -33,16 +33,8 @@ int gcd(int a, int b) {
 int main() {
     std::ios_base::sync_with_stdio(false);
 
-#ifdef _KNST
-    istream& input = cin;
-    ostream& output = cout;
-#else
-    ifstream input("INPUT.TXT");
-    ofstream output("OUTPUT.TXT");
-#endif
-
     size_t n;
-    input >> n;
+    cin >> n;
 
 
     return 0;
