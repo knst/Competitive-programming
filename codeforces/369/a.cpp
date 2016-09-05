@@ -1,0 +1,72 @@
+/*****************************************************************************
+ * codeforces:   knst
+ * topcoder:     knstqq
+ * projecteuler: knstqq
+ * **************************************************************************/
+
+#include <algorithm>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <set>
+#include <stack>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+namespace std {
+    template <class T1, class T2>
+    class hash<pair<T1, T2>> {
+    public:
+        size_t operator()(const pair<T1, T2>& p) const {
+            return hash<T1>()(p.first) & hash<T2>()(p.second);
+        }
+    };
+}
+
+constexpr long double const_pi() { return std::atan(static_cast<long double>(1))*4; }
+
+const int dx4[] = {-1, 0, 0, 1};
+const int dy4[] = {0, -1, 1, 0};
+
+const int dx8[] = {-1, -1, -1,  0,  0,  1,  1,  1};
+const int dy8[] = {-1,  0,  1, -1,  1, -1,  0,  1};
+
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    size_t n;
+    cin >> n;
+    string s;
+    bool ok = false;
+    vector<string> v;
+    for (size_t i = 0; i < n; ++i) {
+        cin >> s;
+        if (!ok && s[0] == 'O' && s[1] == 'O') {
+            ok = true;
+            s[0] = s[1] = '+';
+        }
+        if (!ok && s[3] == 'O' && s[4] == 'O') {
+            ok = true;
+            s[3] = s[4] = '+';
+        }
+        v.push_back(s);
+    }
+    if (ok) {
+        cout << "YES" << endl;;
+        for(auto i : v)
+            cout << i << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+
+
+    return 0;
+}
