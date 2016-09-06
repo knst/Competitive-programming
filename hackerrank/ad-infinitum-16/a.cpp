@@ -53,7 +53,10 @@ int main() {
         int diff;
         cin >> type >> diff;
         if (type == 1) {
-            rotate += diff;
+            if (mirrored)
+                rotate = rotate + n - diff;
+            else
+                rotate += diff;
         } else {
             if (mirrored) {
                 rotate = rotate + diff;
