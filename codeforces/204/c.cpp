@@ -1,36 +1,43 @@
 #include <iostream>
 #include <vector>
-#include <set>
-#include <algorithm>
+#include <cstdio>
 
 using namespace std;
+
+int abs(int a) {
+    return max(a, -a);
+}
 
 int main() {
     int n;
     cin >> n;
-
     n *= 2;
-
-    vector<long long> v(n);
+    vector<int> v(n);
     for (int i = 0; i < n; ++i) {
-        double ai;
-        cin >> ai;
-        v[i] = ai * 1000;
-        if (v[i] >= 0)
+        double x;
+        cin >> x;
+        if (x >= 0) {
+            v[i] = x * 1000.0 + 0.1;
             v[i] = v[i] % 1000;
-        if (v[i] < 0)
-            v[i] = (0 - v[i]) % 1000;
+        } else {
+            v[i] = - x * 1000.0 + 0.1;
+            v[i] = 1000 - v[i] % 1000;
+        }
     }
-
-    sort(v.begin(), v.end());
-    long long delta = 0;
-    for (int i = 0, j = n - 1; i < j; ++i, --j) {
-        cout  << v[i] << ' ' << v[j] << endl;
-        delta += v[i];
-        if (v[j] != 0)
-            delta -= (1000 - v[j]);
+    int sum = 0;
+    int count = 0;
+    for (int i = 0; i < n; ++i) {
+        sum += v[i];
+        if (v[i] != 0)
+            ++count;
     }
-    delta = max(delta, -delta);
-    cout << delta / 1000 << '.' << delta % 1000 << endl;
-    return 0;
+    int minimum = 1000 * 1000 * 1000;
+    for (int i = max(0, count - n / 2); i <= min(n / 2, count); ++i) {
+        minimum = min(minimum, abs(1000 * i - sum));
+    }
+    printf("%.3f", minimum / 1000.0);
+//    cout << minimum / 1000 << '.' << minimum % 1000 / 100 << minimum % 100 / 10 << minimum % 10;
 }
+
+
+
