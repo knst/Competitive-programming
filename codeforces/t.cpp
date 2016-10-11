@@ -18,7 +18,7 @@
 using namespace std;
 
 namespace std { template <class T1, class T2> struct hash<pair<T1, T2>> {
-    size_t operator()(const auto& p) const { return hash<T1>()(p.first) ^ hash<T2>()(p.second); }
+    size_t operator()(const pair<T1, T2>& p) const { return hash<T1>()(p.first) ^ hash<T2>()(p.second); }
 };}
 
 constexpr long double const_pi() { return std::atan(static_cast<long double>(1)) * 4; }
@@ -29,7 +29,7 @@ const int dy4[] = {0, -1, 1, 0};
 const int dx8[] = {-1, -1, -1,  0,  0,  1,  1,  1};
 const int dy8[] = {-1,  0,  1, -1,  1, -1,  0,  1};
 
-auto gcd(auto A, auto B) { return B == 0 ? A : gcd(B, A % B); }
+template<class T> T gcd(T A, T B) { return B == 0 ? A : gcd(B, A % B); }
 
 uint64_t powMod(uint64_t G, uint64_t pow, uint64_t M) {
     if (pow == 0) return 1;
