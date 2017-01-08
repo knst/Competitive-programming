@@ -438,7 +438,7 @@ public class LightingVis {
                 debug = true;
         }
         if (seed.equals("big")) {
-            for (int i = 0; i < 10000; i += 997) {
+            for (int i = 0; i < 10000; i += 97) {
                 new LightingVis(String.valueOf(i));
             }
             System.out.println("Summary Score = " + summaryScore);
