@@ -28,19 +28,31 @@ class Lighting {
             swap(y1, y0);
         }
 
+        int dx = x1 - x0;
+        int dy = y1 - y0;
+        float derror = std::abs(static_cast<float>(dy) / dx);
+        float error = 0;
+        int y = y0;
+
+        if (x0 < 0) {
+            error = derror * x0;
+            y += (y1 > y0 ? 1 : -1) * truncf(error);
+            error = error - truncf(error);
+            x0 = 0;
+        }
+
         for (int x = x0; x <= x1; ++x) {
-            float t = x == x1
-                ? 1
-                : (x - x0) / static_cast<float>(x1 - x0);
-            int y = y0 * (1. - t) + y1 * t;
             if (steep) {
-                if (map[y][x] < 0) {
+                if (map[y][x] < 0)
                     return false;
-                }
             } else {
-                if (map[x][y] < 0) {
+                if (map[x][y] < 0)
                     return false;
-                }
+            }
+            error += derror;
+            if (error > 0.5) {
+                y +=  (y1 > y0 ? 1 : -1);
+                error -= 1.0;
             }
         }
         return true;
@@ -231,7 +243,7 @@ public:
             cerr << i << endl;
         cerr << endl;
         size_t S = _map.size();
-        const size_t step = min<size_t>(100, 25. / pow(S * D, 0.25));
+        const size_t step = min<size_t>(100, 75. / pow(S * D, 0.5));
         size_t Ss = S * step;
         map.resize(Ss);
         for (auto& i : map) {
