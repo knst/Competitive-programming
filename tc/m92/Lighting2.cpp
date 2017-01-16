@@ -13,10 +13,10 @@
 using namespace std;
 
 class Lighting {
-    using Point = pair<int, int>;
+    using Point = pair<int16_t, int16_t>;
     vector<vector<int>> map;
 
-    bool trace(int x0, int y0, int x1, int y1) const {
+    bool trace(int x0, int y0, int x1, int y1, int n) const {
         bool steep = false;
         if (abs(x1 - x0) < abs(y1 - y0)) {
             swap(x1, y1);
@@ -41,18 +41,33 @@ class Lighting {
             x0 = 0;
         }
 
-        for (int x = x0; x <= x1; ++x) {
-            if (steep) {
+        if (steep) {
+            for (int x = x0; x <= x1; ++x) {
                 if (map[y][x] < 0)
                     return false;
-            } else {
+                error += derror;
+                if (error > 0.5) {
+                    y +=  (y1 > y0 ? 1 : -1);
+                    if (error > 0.7071 && y >= 0 && y < n) {
+                        if (map[y][x] < 0)
+                            return false;
+                    }
+                    error -= 1.0;
+                }
+            }
+        } else {
+            for (int x = x0; x <= x1; ++x) {
                 if (map[x][y] < 0)
                     return false;
-            }
-            error += derror;
-            if (error > 0.5) {
-                y +=  (y1 > y0 ? 1 : -1);
-                error -= 1.0;
+                error += derror;
+                if (error > 0.5) {
+                    y +=  (y1 > y0 ? 1 : -1);
+                    if (error > 0.7071 && y >= 0 && y < n) {
+                        if (map[x][y] < 0)
+                            return false;
+                    }
+                    error -= 1.0;
+                }
             }
         }
         return true;
@@ -77,13 +92,13 @@ class Lighting {
             }
             for (int y = max(0, j - d); y <= min(n - 1, j + d); ++y) {
                 int b = y - j;
-                if (a * a + b * b > d * d) {
+                if (a * a + b * b >= d * d) {
                     continue;
                 }
                 if (map[x][y] < 0) {
                     continue;
                 }
-                if (!trace(x, y, i, j)) {
+                if (!trace(x, y, i, j, n)) {
                     continue;
                 }
                 result.push_back({x, y});
