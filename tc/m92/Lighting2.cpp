@@ -42,7 +42,7 @@ class Lighting {
                     error += derror;
                     if (error > 0.5) {
                         ++y;
-                        if (error > 0.7071 && y < n) {
+                        if (y < n) {
                             if (map[y][x] < 0)
                                 return false;
                         }
@@ -56,7 +56,7 @@ class Lighting {
                     error += derror;
                     if (error > 0.5) {
                         --y;
-                        if (error > 0.7071 && y >= 0) {
+                        if (y >= 0) {
                             if (map[y][x] < 0)
                                 return false;
                         }
@@ -72,7 +72,7 @@ class Lighting {
                     error += derror;
                     if (error > 0.5) {
                         ++y;
-                        if (error > 0.7071 && y < n) {
+                        if (y < n) {
                             if (map[x][y] < 0)
                                 return false;
                         }
@@ -86,7 +86,7 @@ class Lighting {
                     error += derror;
                     if (error > 0.5) {
                         --y;
-                        if (error > 0.7071 && y >= 0) {
+                        if (y >= 0) {
                             if (map[x][y] < 0)
                                 return false;
                         }
