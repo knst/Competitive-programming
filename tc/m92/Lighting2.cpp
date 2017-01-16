@@ -281,9 +281,15 @@ class Lighting {
                             bestJ = j;
                             bestScore = score;
                         }
+                        if (score == bestScore && rand() % 3) {
+                            bestI = i;
+                            bestJ = j;
+                            bestScore = score;
+                        }
                     }
                 }
-                if (bestScore != s.first) {
+                Point bestPoint{bestI, bestJ};
+                if (bestScore != s.first || s.second != bestPoint) {
                     changed = true;
                     s.first = bestScore;
                     s.second.first = bestI;
