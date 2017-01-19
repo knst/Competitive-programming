@@ -16,117 +16,56 @@ class Lighting {
     using Point = pair<int16_t, int16_t>;
     vector<vector<int>> map;
 
-    bool trace(int x0, int y0, int x1, int y1, int n) const {
+    bool testPoint(vector<vector<bool>>& usedPoints, int _X, int _Y, bool steep, int x, int y) const {
+        if (steep) {
+            swap(_X, _Y);
+            swap(x, y);
+        }
+        if (map[_X][_Y] < 0) {
+            return false;
+        }
+        usedPoints[x][y] = true;
+        return true;
+    }
+    void trace(vector<vector<bool>>& usedPoints, int  I, int J, int x1, int y1, int n, int d) const {
+        int x0 = I;
+        int y0 = J;
         bool steep = false;
-        if (abs(x1 - x0) < abs(y1 - y0)) {
+        if (abs(x1) < abs(y1)) {
             swap(x1, y1);
             swap(x0, y0);
             steep = true;
         }
-        if (x1 < x0) {
-            swap(x1, x0);
-            swap(y1, y0);
-        }
-
-        int dx = x1 - x0;
-        int dy = y1 - y0;
+        int dx = x1;
+        int dy = y1;
         float derror = std::abs(static_cast<float>(dy) / dx);
         float error = 0;
-        int y = y0;
+        int y = 0;
 
-        if (steep) {
-            if (y1 > y0) {
-                for (int x = x0; x <= x1; ++x) {
-                    if (map[y][x] < 0)
-                        return false;
-                    error += derror;
-                    if (error > 0.5) {
-                        ++y;
-                        if (y < n) {
-                            if (map[y][x] < 0)
-                                return false;
-                        }
-                        error -= 1.0;
-                    }
+        if (x1 >= 0) {
+            for (int x = 0; x <= min(min(x1, n - 1 - x0), d); ++x) {
+                if (!testPoint(usedPoints, x + x0, y + y0, steep, x + d, y + d)) {
+                    return;
                 }
-            } else {
-                for (int x = x0; x <= x1; ++x) {
-                    if (map[y][x] < 0)
-                        return false;
-                    error += derror;
-                    if (error > 0.5) {
-                        --y;
-                        if (y >= 0) {
-                            if (map[y][x] < 0)
-                                return false;
-                        }
-                        error -= 1.0;
-                    }
+                error += derror;
+                if (error > 0.5) {
+                    y += y1 > 0 ? 1 : -1;
+                    if (y + y0 < 0 || y + y0 >= n) return;
+                    if (!testPoint(usedPoints, x + x0, y + y0, steep, x + d, y + d)) return;
+                    error -= 1.0;
                 }
             }
-        } else {
-            if (y1 > y0) {
-                for (int x = x0; x <= x1; ++x) {
-                    if (map[x][y] < 0)
-                        return false;
-                    error += derror;
-                    if (error > 0.5) {
-                        ++y;
-                        if (y < n) {
-                            if (map[x][y] < 0)
-                                return false;
-                        }
-                        error -= 1.0;
-                    }
+        } else { // reversed
+            for (int x = 0; x >= max(max(0 - x0, x1), -d); --x) {
+                if (!testPoint(usedPoints, x + x0, y + y0, steep, x + d, y + d)) {
+                    return;
                 }
-            } else {
-                for (int x = x0; x <= x1; ++x) {
-                    if (map[x][y] < 0)
-                        return false;
-                    error += derror;
-                    if (error > 0.5) {
-                        --y;
-                        if (y >= 0) {
-                            if (map[x][y] < 0)
-                                return false;
-                        }
-                        error -= 1.0;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-    vector<vector<vector<vector<bool>>>> traces;
-    void initTraces(int d) {
-        int n = map.size();
-        traces.resize(n);
-        for (auto& i : traces) {
-            i.resize(n);
-            for (auto& j : i) {
-                j.resize(d + 1);
-                for (auto& k : j) {
-                    k.resize(2 * d + 1);
-                }
-            }
-        }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (map[i][j] < 0) {
-                    continue;
-                }
-                for (int a = 0; a < min(d + 1, n - i); ++a) {
-                    int x = a + i;
-                    for (int y = max(0, j - d); y <= min(n - 1, j + d); ++y) {
-                        int b = y - j;
-                        if (a * a + b * b >= d * d) {
-                            continue;
-                        }
-                        if (map[x][y] < 0) {
-                            continue;
-                        }
-                        traces[i][j][a][b + d] = trace(i, j, x, y, n);
-                    }
+                error += derror;
+                if (error > 0.5) {
+                    y += y1 > 0 ? 1 : -1;
+                    if (y + y0 < 0 || y + y0 >= n) return;
+                    if (!testPoint(usedPoints, x + x0, y + y0, steep, x + d, y + d)) return;
+                    error -= 1.0;
                 }
             }
         }
@@ -137,33 +76,44 @@ class Lighting {
         return x * x + y * y;
     }
 
-    void buildArea(vector<Point> &result, int i, int j, int d) const {
+    void buildArea(vector<vector<bool>>& usedPoints, vector<Point> &result, int i, int j, int d) const {
         if (map[i][j] < 0) {
             return;
         }
-        int n = map.size();
-        for (int a = -d; a < 0; ++a) {
-            int x = a + i;
-            if (x < 0) {
-                continue;
-            }
-            for (int y = max(0, j - d); y <= min(n - 1, j + d); ++y) {
-                int b = y - j;
-                if (!traces[x][y][-a][-b + d])
-                    continue;
-                result.push_back({x, y});
-            }
+        for (auto& i : usedPoints) {
+            fill(i.begin(), i.end(), false);
         }
-        for (int a = 0; a <= d; ++a) {
-            int x = a + i;
-            if (x >= n) {
-                break;
+        // d - radius; i,j - center
+        int x = 0;
+        int y = d;
+        int delta = 1 - 2 * d;
+        int error = 0;
+        int n = map.size();
+        while (y >= 0) {
+            trace(usedPoints, i, j, x, y, n, d);
+            trace(usedPoints, i, j, x,  - y, n, d);
+            trace(usedPoints, i, j, - x, y, n, d);
+            trace(usedPoints, i, j, - x,  - y, n, d);
+            error = 2 * (delta + y) - 1;
+            if (delta < 0 && error <= 0)  {
+               delta += 2 * ++x + 1;
+               continue;
             }
-            for (int y = max(0, j - d); y <= min(n - 1, j + d); ++y) {
-                int b = y - j;
-                if (!traces[i][j][a][b + d])
-                    continue;
-                result.push_back({x, y});
+            error = 2 * (delta - x) - 1;
+            if (delta > 0 && error > 0) {
+               delta += 1 - 2 * --y;
+               continue;
+            }
+            x++;
+            delta += 2 * (x - y);
+            y--;
+        }
+
+        for (size_t x = 0; x < usedPoints.size(); ++x) {
+            for (size_t y = 0; y < usedPoints[0].size(); ++y) {
+                if (usedPoints[x][y]) {
+                    result.push_back({i + x - d, j + y - d});
+                }
             }
         }
     }
@@ -195,11 +145,12 @@ class Lighting {
     vector<Point> process(int d, size_t l) {
         double startTime = getTime();
         int n = map.size();
-        initTraces(d);
         vector<vector<vector<Point>>> areas(n, vector<vector<Point>>(n));
+        vector<vector<bool>> usedPoints(d + d + 1, vector<bool>(d + d + 1));
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                buildArea(areas[i][j], i, j, d);
+                buildArea(usedPoints, areas[i][j], i, j, d);
+                sort(usedPoints.begin(), usedPoints.end());
             }
         }
         cerr << "build areas: " << getTime() - startTime << endl;
@@ -207,6 +158,11 @@ class Lighting {
         while (l--) {
             if (getTime() - startTime > 18.0) {
                 cerr << "getTime: " << getTime() << endl;
+                do {
+                    int bestI = rand() % n;
+                    int bestJ = rand() % n;
+                    result.push_back({bestI, bestJ});
+                } while (l--);
                 cerr << "tl: " << getTime() - startTime << endl;
                 cerr << "TL!!!" << endl;
                 cerr << "TL!!!" << endl;
@@ -235,6 +191,7 @@ class Lighting {
                 ++map[i.first][i.second];
             }
         }
+
         while (getTime() - startTime < 18.0) {
             vector<pair<int, Point>> scores;
             for (auto p : result) {
@@ -325,6 +282,7 @@ public:
         cerr << endl;
         size_t S = _map.size();
         const size_t step = min<size_t>(100, 80. / pow(S * D, 0.5));
+//        const size_t step = min<size_t>(100, pow(1e9 / (4 * S * S * D * D * 3.14), 0.25));
         size_t Ss = S * step;
         map.resize(Ss);
         for (auto& i : map) {
